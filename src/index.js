@@ -26,6 +26,12 @@ class App extends React.Component {
         </Header>
 
         <QueryForm />
+
+        <Message
+          header="TODO"
+          content="How about the start and end date??"
+          warning
+        />
       </Container>
     );
   }
