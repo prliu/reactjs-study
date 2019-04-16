@@ -13,28 +13,20 @@ import {
 } from "semantic-ui-react";
 
 import "./styles.css";
-import "semantic-ui-css/semantic.min.css";
+
 import QueryForm from "./query-form";
 
 class App extends React.Component {
   render() {
     return (
-      <div className="App">
-        <Container>
-          <Divider hidden />
-          <Header as="h1" dividing>
-            Major Weight
-          </Header>
+      <Container>
+        <Divider hidden />
+        <Header as="h1" dividing>
+          Major Weight of Stocks
+        </Header>
 
-          <Fragment>
-            <Message info>
-              <p>Major Weight</p>
-            </Message>
-          </Fragment>
-
-          <QueryForm />
-        </Container>
-      </div>
+        <QueryForm />
+      </Container>
     );
   }
 }
