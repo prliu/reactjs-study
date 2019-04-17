@@ -17,6 +17,8 @@ class QueryForm extends React.Component {
     super(props);
 
     this.state = { visible: props.visible };
+    this.handleClick = this.handleClick.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   sendQuery = () => {
@@ -32,6 +34,15 @@ class QueryForm extends React.Component {
       });
   };
 
+  handleChange = event => {
+    this.setState({ sid: event.target.value });
+  };
+
+  handleClick = () => {
+    this.props.onChange(this.state.sid);
+    this.setState({ visible: false });
+  };
+
   render() {
     if (!this.state.visible) {
       return null;
@@ -40,7 +51,12 @@ class QueryForm extends React.Component {
         <Segment floated="right">
           <Form>
             <Form.Group widths="equal">
-              <Form.Input label="Stock Id" placeholder="Stock Id" />
+              <Form.Input
+                label="Stock Id"
+                name="sid"
+                placeholder="Stock Id"
+                onChange={this.handleChange}
+              />
               <Form.Select
                 label="Period"
                 selectedLabel="W"
@@ -59,7 +75,7 @@ class QueryForm extends React.Component {
               </Form.Field>
             </Form.Group>
             <Form.Group inline>
-              <Form.Button primary onClick={this.sendQuery}>
+              <Form.Button primary onClick={this.handleClick}>
                 <Icon name="play circle" />
                 Query
               </Form.Button>

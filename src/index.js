@@ -29,8 +29,15 @@ class App extends React.Component {
     }));
   };
 
+  // This is a callback function which is used to update the parent information.
+  updateSid = sid => {
+    this.setState({ sid: sid, isClicked: !this.state.isClicked });
+  };
+
   render() {
-    var obj = this.state.isClicked ? <QueryForm visible={true} /> : null;
+    var obj = this.state.isClicked ? (
+      <QueryForm visible={true} onChange={this.updateSid} />
+    ) : null;
 
     return (
       <Container>
