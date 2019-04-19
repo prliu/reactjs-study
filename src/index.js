@@ -1,63 +1,105 @@
-import React, { Fragment } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 
 import {
   Container,
-  Divider,
-  Header,
-  Message,
-  Segment,
+  Row,
+  Col,
+  Form,
+  ButtonToolbar,
   Button,
-  Icon
-} from "semantic-ui-react";
+  Card,
+  Navbar
+} from "react-bootstrap";
 
 import "./styles.css";
 
-import QueryForm from "./query-form";
-
 class App extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
-    this.state = { isClicked: true, sid: 6176, sname: "瑞儀" };
-    this.handleClick = this.handleClick.bind(this);
+    this.state = {
+      sid: "0050",
+      sname: "台灣50",
+      period: "W",
+      formOpen: true
+    };
+
+    this.handlePeriodChanged = this.handlePeriodChanged.bind(this);
+    this.handleOKButton = this.handleOKButton.bind(this);
   }
 
-  handleClick = () => {
-    this.setState(state => ({
-      isClicked: !state.isClicked
-    }));
-  };
+  handlePeriodChanged(event) {
+    this.setState({
+      period: event.target.value
+    });
+  }
 
-  // This is a callback function which is used to update the parent information.
-  updateSid = sid => {
-    this.setState({ sid: sid, isClicked: !this.state.isClicked });
-  };
+  handleOKButton() {
+    this.setState({
+      formOpen: !this.state.formOpen
+    });
+  }
 
   render() {
-    var obj = this.state.isClicked ? (
-      <QueryForm visible={true} onChange={this.updateSid} />
-    ) : null;
+    var formObj;
+    if (this.state.formOpen) {
+      formObj = (
+        <Card>
+          <Card.Body>
+            <Row>
+              <Col>
+                <Form.Group controlId="sid">
+                  <Form.Label>Stock Id</Form.Label>
+                  <Form.Control placeholder="Stock Id" />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group
+                  controlId="period"
+                  onChange={this.handlePeriodChanged}
+                >
+                  <Form.Label>Period</Form.Label>
+                  <Form.Control as="select" value={this.state.period}>
+                    <option value="D">Daily</option>
+                    <option value="W">Weekly</option>
+                    <option value="M">Monthly</option>
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <ButtonToolbar>
+                  <Button variant="primary" onClick={this.handleOKButton}>
+                    OK
+                  </Button>
+                  <Button variant="light">Clear</Button>
+                  <Button variant="light">Recalculate</Button>
+                </ButtonToolbar>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
+      );
+    }
 
     return (
       <Container>
-        <Divider hidden />
-        <Message>
-          <Message.Header>
-            {this.state.sname} ({this.state.sid})
-            <Button icon floated="right" size="mini" onClick={this.handleClick}>
-              {this.state.isClicked ? (
-                <Icon name="angle double down" />
-              ) : (
-                <Icon name="angle double up" />
-              )}
+        <Navbar bg="dark" variant="dark">
+          <Navbar.Brand>
+            {this.state.sname} ({this.state.sid}) - {this.state.period}
+          </Navbar.Brand>
+          <Navbar.Collapse className="justify-content-end">
+            <Button size="sm" variant="light" onClick={this.handleOKButton}>
+              {this.state.formOpen ? "O" : "X"}
             </Button>
-          </Message.Header>
+          </Navbar.Collapse>
+        </Navbar>
+        {formObj}
 
-          <p>This is a simple message</p>
-        </Message>
-
-        {obj}
+        <br />
+        {"new message here."}
       </Container>
     );
   }
