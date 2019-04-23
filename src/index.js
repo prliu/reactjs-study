@@ -1,109 +1,64 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import {
-  Container,
-  Row,
-  Col,
-  Form,
-  ButtonToolbar,
-  Button,
-  Card,
-  Navbar
-} from "react-bootstrap";
-
 import "./styles.css";
 
+// From there, we are testing Redux library
+import { createStore } from "redux";
+import { Container } from "react-bootstrap";
+
+import MWHeaderForm from "./components/mw-header-form";
+import HelloWorld from "./data-grid";
+
+const CLICK_EXPAND_BTN = "CLICK_EXPAND_BTN";
+const FORM_CHANGE = "VALUE_CHANGE";
+
+// Store structure.
+const initialState = {
+  sid: "0050",
+  sname: "台灣50",
+  period: "W",
+  displayForm: true
+};
+
+const reducer = (state = initialState, { type, payload }) => {
+  switch (type) {
+    case CLICK_EXPAND_BTN:
+      return { ...state, ...payload };
+
+    case FORM_CHANGE:
+      return { ...state, ...payload };
+
+    default:
+      return state;
+  }
+};
+
+const store = createStore(reducer);
+// End of the test.
+
 class App extends React.Component {
-  constructor() {
-    super();
-
-    this.state = {
-      sid: "0050",
-      sname: "台灣50",
-      period: "W",
-      formOpen: true
-    };
-
-    this.handlePeriodChanged = this.handlePeriodChanged.bind(this);
-    this.handleOKButton = this.handleOKButton.bind(this);
-  }
-
-  handlePeriodChanged(event) {
-    this.setState({
-      period: event.target.value
-    });
-  }
-
-  handleOKButton() {
-    this.setState({
-      formOpen: !this.state.formOpen
+  handleFormChange(payload) {
+    store.dispatch({
+      type: FORM_CHANGE,
+      payload: payload
     });
   }
 
   render() {
-    var formObj;
-    if (this.state.formOpen) {
-      formObj = (
-        <Card>
-          <Card.Body>
-            <Row>
-              <Col>
-                <Form.Group controlId="sid">
-                  <Form.Label>Stock Id</Form.Label>
-                  <Form.Control placeholder="Stock Id" />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group
-                  controlId="period"
-                  onChange={this.handlePeriodChanged}
-                >
-                  <Form.Label>Period</Form.Label>
-                  <Form.Control as="select" value={this.state.period}>
-                    <option value="D">Daily</option>
-                    <option value="W">Weekly</option>
-                    <option value="M">Monthly</option>
-                  </Form.Control>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <ButtonToolbar>
-                  <Button variant="primary" onClick={this.handleOKButton}>
-                    OK
-                  </Button>
-                  <Button variant="light">Clear</Button>
-                  <Button variant="light">Recalculate</Button>
-                </ButtonToolbar>
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      );
-    }
-
     return (
       <Container>
-        <Navbar bg="dark" variant="dark">
-          <Navbar.Brand>
-            {this.state.sname} ({this.state.sid}) - {this.state.period}
-          </Navbar.Brand>
-          <Navbar.Collapse className="justify-content-end">
-            <Button size="sm" variant="light" onClick={this.handleOKButton}>
-              {this.state.formOpen ? "O" : "X"}
-            </Button>
-          </Navbar.Collapse>
-        </Navbar>
-        {formObj}
-
+        <MWHeaderForm />
         <br />
-        {"new message here."}
+        <HelloWorld />
       </Container>
     );
   }
 }
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
+const render = () => {
+  ReactDOM.render(<App />, document.getElementById("root"));
+};
+
+store.subscribe(render);
+render();
