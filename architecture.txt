@@ -1,0 +1,8 @@
+index.App
+├ form.QueryForm
+└ info.Info
+  ├ BasicInfo
+  ├ page.Pagination
+  ├ table.DataTable
+  │ └ record.Record
+  └ page.Pagination
