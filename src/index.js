@@ -11,7 +11,9 @@ class App extends React.Component {
 
     this.state = {
       sid: "",
-      period: "w"
+      period: "W",
+      startDate: new Date(),
+      endDate: new Date(),
     };
 
     this.handleFormChange = this.handleFormChange.bind(this);
@@ -27,13 +29,13 @@ class App extends React.Component {
   }
 
   render() {
-    const { sid, period } = this.state;
+    const { sid, period, startDate, endDate } = this.state;
 
     return (
-      <div style={{ padding: "25px" }}>
+      <div style={{ padding: "10px" }}>
         <InfoForm sid={sid} onChange={this.handleFormChange} />
         <br />
-        {sid !== "" ? <DataTable sid={sid} period={period} /> : ""}
+        {sid !== "" ? <DataTable sid={sid} period={period} startDate={startDate} endDate={endDate} /> : ""}
       </div>
     );
   }

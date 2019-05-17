@@ -2,6 +2,23 @@ import React from "react";
 import Pagination from "./page";
 import Record from "./record";
 
+const ColumnHeader = ({ colName, colIdx, isSort, direction, onChange }) => {
+
+  let sortSign;
+
+  if(isSort) {
+    if(direction === "asc") {
+      sortSign = <i className={"fas fa-angle-up"}></i>
+    } else {
+      sortSign = <i className={"fas fa-angle-down"}></i>
+    }
+  }
+
+  return (
+    <th onClick={() => onChange(colIdx)}>{colName} {sortSign}</th>
+  );
+}
+
 class DataTable extends React.Component {
   constructor(props) {
     super(props);
@@ -9,7 +26,9 @@ class DataTable extends React.Component {
     this.state = {
       ...props,
       page: 0,
-      pageSize: 15,
+      pageSize: 20,
+      sortColumn: 1,
+      sortDirection: "desc",
       loading: false,
       data: {
         rows: [[]],
@@ -18,14 +37,17 @@ class DataTable extends React.Component {
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
+    this.handleSortChange = this.handleSortChange.bind(this);
   }
 
-  fetchData(sid, period) {
+  fetchData(sid, period, startDate, endDate) {
+    let sdate = startDate.getFullYear() + '-' + (startDate.getMonth()+1) + '-' + startDate.getDate();
+    let edate = endDate.getFullYear() + '-' + (endDate.getMonth()+1) + '-' + endDate.getDate();
     let host = "http://192.168.0.100:8000";
     let query =
       "/api/btick?sid=" +
       sid +
-      "&sdate=2018-12-07&edate=2019-05-07&period=" +
+      "&sdate=" + sdate + "&edate=" + edate+ "&period=" +
       period;
 
     this.setState({ loading: true });
@@ -42,18 +64,27 @@ class DataTable extends React.Component {
   }
 
   componentDidMount() {
-    let { sid, period } = this.state;
-
-    this.fetchData(sid, period);
+    console.log(this.state);
+    let { sid, period, startDate, endDate } = this.state;
+    this.fetchData(sid, period, startDate, endDate);
   }
 
   componentDidUpdate(prevProps, prevState) {
     let prevSid = prevProps.sid;
     let prevPeriod = prevProps.period;
-    let { sid, period } = this.props;
+    let prevSDate = prevProps.startDate;
+    let prevEDate = prevProps.endDate;
 
-    if (prevSid !== sid || prevPeriod !== period) {
-      this.fetchData(sid, period);
+    let { sid, period, startDate, endDate } = this.props;
+    let needUpdate = false;
+
+    needUpdate = prevSid !== sid ? true : false;
+    needUpdate |= prevPeriod !== period ? true : false;
+    needUpdate |= prevSDate !== startDate ? true : false;
+    needUpdate |= prevEDate !== endDate ? true : false;
+    
+    if (needUpdate) {
+      this.fetchData(sid, period, startDate, endDate);
     }
   }
 
@@ -61,9 +92,37 @@ class DataTable extends React.Component {
     this.setState({ page: page });
   }
 
+  handleSortChange(colIdx) {
+    
+    let direction = this.state.sortDirection;
+    if (colIdx === this.state.sortColumn) {
+      direction = direction === 'desc' ? 'asc' : 'desc';
+    }
+
+    // Sorting data.
+    let tmp = this.state.data.rows.slice(2, this.state.data.rows.length);
+    tmp = tmp.sort((a, b) => {
+      if(direction === "asc") {
+        return a[colIdx] - b[colIdx];
+      } else {
+        return b[colIdx] - a[colIdx];
+      }
+    })
+    let data = this.state.data.rows.slice(0, 2).concat(tmp);
+
+    this.setState({
+      sortColumn: colIdx,
+      sortDirection: direction,
+      data:{
+        columns: this.state.data.columns,
+        rows: data
+      }
+    });
+  }
+
   render() {
-    let page = this.state.page;
-    let pageSize = this.state.pageSize;
+
+    let {page, pageSize, sortColumn, sortDirection} = this.state;
     let { rows, columns } = this.state.data;
 
     let sloc = page * pageSize + 2;
@@ -83,7 +142,12 @@ class DataTable extends React.Component {
               <tr>
                 <th>No.</th>
                 {columns.map((col, idx) => (
-                  <th key={idx}>{col}</th>
+                  <ColumnHeader
+                    colName={col}
+                    colIdx={idx}
+                    {...idx === sortColumn ? { ...{ isSort: true, direction: sortDirection } } : null}
+                    onChange={this.handleSortChange}
+                  />
                 ))}
               </tr>
             </thead>
@@ -97,7 +161,7 @@ class DataTable extends React.Component {
             </tbody>
           </table>
         </div>
-        <div style={style.pagination}>
+        <div style={style.pagination} className={"form-inline"}>
           <Pagination
             count={rows.length - 2}
             page={page}

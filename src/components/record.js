@@ -5,8 +5,13 @@ const Record = ({ data, idx }) => {
     <tr>
       <td style={{ textAlign: "right" }}>{idx === undefined ? "" : idx + 1}</td>
       <td style={style.rowName}>{data[0]}</td>
-      {data.slice(1, data.length).map((col,idx) => (
-        <td key={data[0] + "-" + idx} style={col >= 0 ? style.rowPostive : style.rowNegative}>{col}</td>
+      {data.slice(1, data.length).map((col, idx) => (
+        <td
+          key={data[0] + "-" + idx}
+          style={col >= 0 ? style.rowPostive : style.rowNegative}
+        >
+          {col}
+        </td>
       ))}
     </tr>
   );
@@ -20,12 +25,12 @@ const style = {
   },
   rowPostive: {
     border: "1px black solid",
-    minWidth: "5rem",
+    minWidth: "6rem",
     textAlign: "right"
   },
   rowNegative: {
     border: "1px black solid",
-    minWidth: "5rem",
+    minWidth: "6rem",
     textAlign: "right",
     color: "red"
   }
